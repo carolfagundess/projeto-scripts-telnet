@@ -1,20 +1,21 @@
 import telnetlib
 from comandos_parks import comandos  # Importa o dicionário de comandos
 
-def executar_parks(host, username, password, tipo_comando, serial=None):
+
+def executar_parks(
+    host, username, password, tipo_comando, serial=None, placa=None, pon=None, alias=None, flow=None
+):
     # Configurações do servidor Telnet
     PORT = 23  # Porta padrão do Telnet
     TIMEOUT = 50  # Tempo de espera para conexão
 
-    # Verifica se o comando existe no dicionário, senão usa o comando 'provisionamento'
-    comando_func = comandos.get(tipo_comando, comandos['unc'])
-    comando = comando_func(serial)  # Chama a função correspondente com o parâmetro serial
+    # Verifica se o comando existe no dicionário, senão usa o comando default
+    comando_func = comandos.get(tipo_comando, comandos["unc"])
+    comando = comando_func(
+        serial, placa, pon, alias, flow
+    )  # Chama a função correspondente com o parâmetro serial
 
     try:
-        # Verifica se o comando existe no dicionário, senão usa o comando default
-        comando_func = comandos.get(tipo_comando, comandos['provisionamento'])
-        comando = comando_func(serial)  # Chama a função correspondente com o parâmetro serial
-
         # Conectar ao servidor
         tn = telnetlib.Telnet(host, PORT, TIMEOUT)
 
@@ -52,6 +53,8 @@ def executar_parks(host, username, password, tipo_comando, serial=None):
 
 
 # Testes com diferentes comandos
-# serial = "ztegd3272223"
 # executar_parks("10.199.163.21", "admin", "tcamp@gpon", "unc")
-# executar_parks("10.199.163.21", "admin", "tcamp@gpon", "provisionamento", serial)
+# executar_parks("10.199.163.21", "admin", "tcamp@gpon", "ver_config", serial=serial)
+# executar_parks("10.199.163.21", "admin", "tcamp@gpon", "sinal_onus", placa=1, pon=2)
+
+# Provisionar (serial, placa e pon, alias, flow)
