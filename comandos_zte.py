@@ -37,6 +37,29 @@ def comando_localizaronu(serial, placa=None, pon=None, alias=None, id=None, vlan
     return f"show gpon onu by sn {serial}"
 
 
+# Script provisionamento 
+def comando_configurar_pppoe(slot_olt, porta_olt, id_onu, serial, user_pppoe, vlan_id):
+    return f"""
+configure terminal
+interface gpon-olt_1/{slot_olt}/{porta_olt}
+onu {id_onu} type ZTE-F660 sn {serial}
+!
+interface gpon-onu_1/{slot_olt}/{porta_olt}:{id_onu}
+name {user_pppoe}
+tcont 1 name INTERNET profile T1-1G
+gemport 1 name INTERNET tcont 1
+switchport mode hybrid vport 1
+service-port 1 vport 1 user-vlan {vlan_id} vlan {vlan_id}
+!
+pon-onu-mng gpon-onu_1/{slot_olt}/{porta_olt}:{id_onu}
+service INTERNET gemport 1 cos 0 vlan {vlan_id}
+security-mgmt 212 mode forward state enable ingress-type wan protocol web
+!
+end
+write
+"""
+
+
 # Dicionário de comandos mapeado para funções
 comandos = {
     "unc": comando_naounc,

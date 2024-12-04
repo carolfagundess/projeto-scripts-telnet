@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, scrolledtext
-from primeira_part import executar_gerencia
+from script_gerencia import executar_gerencia
 from script_show import executar_show_configs
 
 
