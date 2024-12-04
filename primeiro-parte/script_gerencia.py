@@ -2,7 +2,7 @@ import telnetlib
 import time
 
 
-def executar_gerencia(host, command):
+def executar_gerencia(host):
     """
     Executa o Telnet para se conectar à OLT e retorna o resultado do comando.
     Possui o comando enable
@@ -27,15 +27,14 @@ def executar_gerencia(host, command):
         tn.write(PASSWORD_ENABLE.encode("ascii") + b"\n")
         time.sleep(1)
         tn.write(b"terminal length 512\n")
-        tn.write((command + "\n").encode("ascii"))
-        time.sleep(1)
+        tn.write(("show gpon onu state gpon-olt_1/5/9" + "\n").encode("ascii"))
+        time.sleep(2)  # Aguarde a saída ser gerada
+        output = tn.read_very_eager().decode("ascii")  # Capturar a saída
+        print(output)
+        
         tn.write(b"exit\n")
-
-        # Captura da saída
-        output = tn.read_very_eager().decode("ascii")
         tn.close()
-
-        return output
     except Exception as e:
         return f"Erro ao executar Telnet: {e}"
 
+executar_gerencia("10.199.162.71")

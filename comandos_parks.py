@@ -34,7 +34,7 @@ def comando_unc(serial=None, placa=None, pon=None, alias=None, flow=None):
 
 
 def comando_ver_blacklist(serial=None, placa=None, pon=None, alias=None, flow=None):
-    return f"show gpon blacklist"
+    return "show gpon blacklist"
 
 
 # Dicionário de comandos mapeado para funções

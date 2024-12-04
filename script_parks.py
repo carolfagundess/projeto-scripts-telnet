@@ -12,7 +12,7 @@ def executar_parks(
     comando_func = comandos.get(tipo_comando, comandos["unc"])
     comando = comando_func(
         serial, placa, pon, alias, flow
-    )  # Chama a função correspondente com o parâmetro serial
+    )  # Chama a função correspondente com os parâmetro
 
     try:
         # Conectar ao servidor
@@ -59,3 +59,4 @@ executar_parks("10.199.163.21", "admin", "tcamp@gpon", "ver_blacklist")
 
 # Em teste
 # Provisionar (serial, placa e pon, alias, flow)
+#executar_parks()
