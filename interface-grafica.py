@@ -80,9 +80,9 @@ frame_direito.grid(row=0, column=1, sticky="nse", padx=5, pady=5)
 
 # Subframe para botões de "Provisionamento de ONU"
 frame_provisionamento_onu = ttk.LabelFrame(
-    frame_direito, text="Provisionamento de ONU", style="Custom.TLabelframe"
+    frame_direito, text="Provisionamento de ONU ZTE", style="Custom.TLabelframe"
 )
-frame_provisionamento_onu.grid(row=0, column=0, sticky="ew", pady=5, padx=5)
+frame_provisionamento_onu.grid(row=0, column=1, sticky="ew", pady=5, padx=5)
 
 botoes_provisionamento = [
     ("Mostrar ID da interface", executar_ids_interface),
@@ -101,9 +101,9 @@ botoes_provisionamento = [
 
 # Subframe para botões de "Informações de uma ONU"
 frame_informacoes_onu = ttk.LabelFrame(
-    frame_direito, text="Informações de uma ONU", style="Custom.TLabelframe"
+    frame_direito, text="Informações de uma ONU - OLT ZTE", style="Custom.TLabelframe"
 )
-frame_informacoes_onu.grid(row=0, column=1, sticky="ew", pady=5, padx=5)
+frame_informacoes_onu.grid(row=0, column=2, sticky="ew", pady=5, padx=5)
 
 botoes_informacoes = [
     "Mostrar atenuação sinal",

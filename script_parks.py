@@ -1,12 +1,20 @@
 import telnetlib
+from comandos_parks import comandos  # Importa o dicionário de comandos
 
-
-def executar_parks(host, username, password, command):
+def executar_parks(host, username, password, tipo_comando, serial=None):
     # Configurações do servidor Telnet
     PORT = 23  # Porta padrão do Telnet
     TIMEOUT = 50  # Tempo de espera para conexão
 
+    # Verifica se o comando existe no dicionário, senão usa o comando 'provisionamento'
+    comando_func = comandos.get(tipo_comando, comandos['unc'])
+    comando = comando_func(serial)  # Chama a função correspondente com o parâmetro serial
+
     try:
+        # Verifica se o comando existe no dicionário, senão usa o comando default
+        comando_func = comandos.get(tipo_comando, comandos['provisionamento'])
+        comando = comando_func(serial)  # Chama a função correspondente com o parâmetro serial
+
         # Conectar ao servidor
         tn = telnetlib.Telnet(host, PORT, TIMEOUT)
 
@@ -25,7 +33,7 @@ def executar_parks(host, username, password, command):
         print(prompt.decode("ascii"))
 
         # Enviar comando
-        tn.write((command + "\n").encode("ascii"))
+        tn.write((comando + "\n").encode("ascii"))
 
         # Capturar resposta do comando até o próximo prompt
         output = tn.read_until(b"#", timeout=10).decode("ascii")
@@ -43,5 +51,7 @@ def executar_parks(host, username, password, command):
         raise  # Relevantar exceção para depuração
 
 
-# Teste a função
-executar_parks("10.199.163.21", "admin", "tcamp@gpon", "show gpon onu unc")
+# Testes com diferentes comandos
+# serial = "ztegd3272223"
+# executar_parks("10.199.163.21", "admin", "tcamp@gpon", "unc")
+# executar_parks("10.199.163.21", "admin", "tcamp@gpon", "provisionamento", serial)
