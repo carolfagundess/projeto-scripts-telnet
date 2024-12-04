@@ -43,4 +43,5 @@ comandos = {
     "summary": comando_summary,
     "ver_config": comando_provisionamento,
     "provisionar": comando_configurar,
+    "ver_blacklist": comando_ver_blacklist,
 }

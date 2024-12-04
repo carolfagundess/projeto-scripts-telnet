@@ -56,5 +56,7 @@ def executar_parks(
 # executar_parks("10.199.163.21", "admin", "tcamp@gpon", "unc")
 # executar_parks("10.199.163.21", "admin", "tcamp@gpon", "ver_config", serial=serial)
 # executar_parks("10.199.163.21", "admin", "tcamp@gpon", "sinal_onus", placa=1, pon=2)
+executar_parks("10.199.163.21", "admin", "tcamp@gpon", "ver_blacklist")
 
+# Em teste
 # Provisionar (serial, placa e pon, alias, flow)
