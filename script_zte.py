@@ -9,7 +9,7 @@ def executar_zte(
     serial=None,
     placa=None,
     pon=None,
-    alias=None,
+    pppoe=None,
     id=None,
     vlan=None,
 ):
@@ -24,7 +24,7 @@ def executar_zte(
     comando_func = comandos.get(tipo_comando, comandos["unc"])
     # Comando formado para enviar para a olt
     comando = comando_func(
-        placa=placa, pon=pon, serial=serial, alias=alias, id=id, vlan=vlan
+        placa=placa, pon=pon, serial=serial, pppoe=pppoe, id=id, vlan=vlan
     )
 
     try:
@@ -49,6 +49,7 @@ def executar_zte(
 
         tn.write(b"exit\n")
         tn.close()
+        return output
     except Exception as e:
         print(f"Erro:  {e}")
         raise
@@ -56,6 +57,9 @@ def executar_zte(
 
 # Teste com os comandos novos
 # executar_zte("10.199.162.71", "unc")
-# executar_zte("10.199.162.71", "localizar_onu", serial="ZTEGD2A1E0DD")
+# executar_zte("10.199.228.68", "provisionamento", placa=1, pon=1, id=1)
+# executar_zte("10.199.162.71", "localizar_onu",serial="ZTEGD2A1E0DD")
+# executar_zte("10.199.228.68", "atenuacao_onu", placa=1, pon=1, id=1)
 # executar_zte("10.199.162.71", "mostrar_ids", placa=5, pon=9)
-
+# executar_zte("10.199.228.68", "quedas_onu", placa=1, pon=1, id=1)
+# executar_zte("10.199.228.68", "sinal_onu", placa=1, pon=1, id=2)
