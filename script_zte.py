@@ -21,6 +21,7 @@ def executar_zte(
     PASSWORD_ENABLE = "g3r3nc1@"
 
     # Verifica se o comando existe no dicionário, senão usa o comando default
+    # comando_func sera o respectivo comando dentro de comandos zte
     comando_func = comandos.get(tipo_comando, comandos["unc"])
     # Comando formado para enviar para a olt
     comando = comando_func(
@@ -49,17 +50,20 @@ def executar_zte(
 
         tn.write(b"exit\n")
         tn.close()
-        return output
+        return {"comando": comando, "output": output}
     except Exception as e:
         print(f"Erro:  {e}")
         raise
 
 
 # Teste com os comandos novos
-# executar_zte("10.199.162.71", "unc")
-# executar_zte("10.199.228.68", "provisionamento", placa=1, pon=1, id=1)
-# executar_zte("10.199.162.71", "localizar_onu",serial="ZTEGD2A1E0DD")
+# executar_zte("10.199.221.110", "unc")
+# executar_zte("10.199.221.110", "provisionamento", placa=3, pon=16, id=61)
+# executar_zte("10.199.221.110", "localizar_onu",serial="ZTEGD4F3857B")
 # executar_zte("10.199.228.68", "atenuacao_onu", placa=1, pon=1, id=1)
-# executar_zte("10.199.162.71", "mostrar_ids", placa=5, pon=9)
-# executar_zte("10.199.228.68", "quedas_onu", placa=1, pon=1, id=1)
+# executar_zte("10.199.162.71", "mostrar_ids", placa=3, pon=16)
+executar_zte("10.199.228.68", "quedas_onu", placa=1, pon=1, id=5)
 # executar_zte("10.199.228.68", "sinal_onu", placa=1, pon=1, id=2)
+
+# Funcinou teste de provisionamento na ZTE
+# executar_zte("10.199.221.110","configurar_onu", placa=3, pon=16, pppoe="1452757.82205a9d2d1", id=61, serial="ZTEGD4F3857B", vlan=516)

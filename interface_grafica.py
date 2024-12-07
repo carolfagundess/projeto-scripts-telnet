@@ -1,87 +1,101 @@
 import tkinter as tk
-from script_zte import executar_zte
+from script_parks import executar_parks
 
-def executar_comando(tipo_comando):
+# Dicionário de comandos mapeado para strings
+comandos = {
+    "unc": "unc",
+    "summary": "summary",
+    "ver_config": "ver_config",
+    "provisionar": "provisionar",
+    "ver_blacklist": "ver_blacklist",
+}
+
+def handle_command(command):
+    """
+    Função intermediária que recebe o comando do botão, coleta os inputs do usuário e executa a função.
+    """
     host = entry_host.get()
-    serial = entry_serial.get()
-    placa = entry_placa.get()
-    pon = entry_pon.get()
-    pppoe = entry_pppoe.get()
-    id = entry_id.get()
-    vlan = entry_vlan.get()
+    username = entry_username.get()
+    password = entry_password.get()
+    serial = entry_serial.get() or None
+    placa = entry_placa.get() or None
+    pon = entry_pon.get() or None
+    alias = entry_alias.get() or None
+    flow = entry_flow.get() or None
 
+    # Chama a função executar_parks com os parâmetros coletados
     try:
-        comando = f"Host: {host}, Tipo: {tipo_comando}, Serial: {serial}, Placa: {placa}, PON: {pon}, PPPoE: {pppoe}, ID: {id}, VLAN: {vlan}"
-        command_text.delete("1.0", tk.END)
-        command_text.insert(tk.END, comando)
-
-        executar_zte(
-            host=host,
-            tipo_comando=tipo_comando,
-            serial=serial,
-            placa=placa if placa else None,
-            pon=pon if pon else None,
-            pppoe=pppoe,
-            id=id if id else None,
-            vlan=vlan if vlan else None,
-        )
+        result = executar_parks(host, username, password, command, serial, placa, pon, alias, flow)
+        output_text.insert(tk.END, f"Comando: {command}\n")
+        output_text.insert(tk.END, f"Resultado: {result}\n\n")
     except Exception as e:
-        output_text.delete("1.0", tk.END)
-        output_text.insert(tk.END, f"Erro: {e}")
+        output_text.insert(tk.END, f"Erro ao executar o comando '{command}': {str(e)}\n\n")
 
-# Criação da janela principal
+# Configuração da janela principal
 root = tk.Tk()
-root.title("Interface de Comandos ZTE")
+root.title("Comandos Parks com Tkinter")
+root.geometry("800x600")
 
-# Campos de entrada
-frame_inputs = tk.Frame(root)
-frame_inputs.pack(pady=10)
+# Frame principal para organização
+main_frame = tk.Frame(root)
+main_frame.pack(fill="both", expand=True)
 
-labels = ["Host:", "Serial:", "Placa:", "PON:", "PPPoE:", "ID:", "VLAN:"]
-entries = []
+# Frame esquerdo para inputs e botões
+frame_left = tk.Frame(main_frame, width=200)
+frame_left.pack(side="left", fill="y", padx=10, pady=10)
 
-for label_text in labels:
-    frame = tk.Frame(frame_inputs)
-    frame.pack(fill=tk.X, pady=2)
-    label = tk.Label(frame, text=label_text, width=10, anchor="w")
-    label.pack(side=tk.LEFT)
-    entry = tk.Entry(frame)
-    entry.pack(fill=tk.X, expand=True, padx=5)
-    entries.append(entry)
+# Campos de entrada para parâmetros
+tk.Label(frame_left, text="Host:").pack(anchor="w")
+entry_host = tk.Entry(frame_left, width=25)
+entry_host.pack(anchor="w")
 
-entry_host, entry_serial, entry_placa, entry_pon, entry_pppoe, entry_id, entry_vlan = entries
+tk.Label(frame_left, text="Username:").pack(anchor="w")
+entry_username = tk.Entry(frame_left, width=25)
+entry_username.pack(anchor="w")
 
-# Botões para comandos
-frame_buttons = tk.Frame(root)
-frame_buttons.pack(pady=10)
+tk.Label(frame_left, text="Password:").pack(anchor="w")
+entry_password = tk.Entry(frame_left, width=25, show="*")
+entry_password.pack(anchor="w")
 
-comandos = [
-    ("Unconfigured", "unc"),
-    ("Provisionamento", "provisionamento"),
-    ("Localizar ONU", "localizar_onu"),
-    ("Atenuação ONU", "atenuacao_onu"),
-    ("Mostrar IDs", "mostrar_ids"),
-    ("Quedas ONU", "quedas_onu"),
-    ("Sinal ONU", "sinal_onu"),
-]
+tk.Label(frame_left, text="Serial:").pack(anchor="w")
+entry_serial = tk.Entry(frame_left, width=25)
+entry_serial.pack(anchor="w")
 
-for texto, tipo_comando in comandos:
-    botao = tk.Button(frame_buttons, text=texto, command=lambda tc=tipo_comando: executar_comando(tc))
-    botao.pack(side=tk.LEFT, padx=5)
+tk.Label(frame_left, text="Placa:").pack(anchor="w")
+entry_placa = tk.Entry(frame_left, width=25)
+entry_placa.pack(anchor="w")
 
-# Áreas de texto para exibir comando e saída
-frame_output = tk.Frame(root)
-frame_output.pack(pady=10, fill=tk.BOTH, expand=True)
+tk.Label(frame_left, text="PON:").pack(anchor="w")
+entry_pon = tk.Entry(frame_left, width=25)
+entry_pon.pack(anchor="w")
 
-command_label = tk.Label(frame_output, text="Comando enviado:")
-command_label.pack(anchor="w")
-command_text = tk.Text(frame_output, height=5)
-command_text.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+tk.Label(frame_left, text="Alias:").pack(anchor="w")
+entry_alias = tk.Entry(frame_left, width=25)
+entry_alias.pack(anchor="w")
 
-output_label = tk.Label(frame_output, text="Saída do comando:")
-output_label.pack(anchor="w")
-output_text = tk.Text(frame_output, height=10)
-output_text.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+tk.Label(frame_left, text="Flow:").pack(anchor="w")
+entry_flow = tk.Entry(frame_left, width=25)
+entry_flow.pack(anchor="w")
 
-# Loop principal
+# Botões para cada comando
+def create_command_buttons():
+    tk.Label(frame_left, text="Comandos:", font=("Arial", 12, "bold")).pack(anchor="w", pady=5)
+    for command, command_string in comandos.items():
+        button = tk.Button(frame_left, text=command.capitalize(), command=lambda c=command_string: handle_command(c), width=20)
+        button.pack(anchor="w", pady=2)
+
+create_command_buttons()
+
+# Frame direito para exibir saída
+frame_right = tk.Frame(main_frame, bg="white")
+frame_right.pack(side="right", fill="both", expand=True, padx=10, pady=10)
+
+output_text = tk.Text(frame_right, wrap="word", bg="white", fg="black", font=("Arial", 10))
+output_text.pack(side="left", fill="both", expand=True)
+
+scrollbar = tk.Scrollbar(frame_right, command=output_text.yview)
+scrollbar.pack(side="right", fill="y")
+output_text.config(yscrollcommand=scrollbar.set)
+
+# Loop principal da interface gráfica
 root.mainloop()
