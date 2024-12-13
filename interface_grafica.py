@@ -1,101 +1,107 @@
 import tkinter as tk
-from script_parks import executar_parks
+from tkinter import ttk, messagebox
+from script_zte import executar_zte  # Importa a função que executa o comando
+from comandos_zte import comandos
 
-# Dicionário de comandos mapeado para strings
-comandos = {
-    "unc": "unc",
-    "summary": "summary",
-    "ver_config": "ver_config",
-    "provisionar": "provisionar",
-    "ver_blacklist": "ver_blacklist",
-}
+# Função para configurar os inputs conforme o tipo de comando
+def configurar_inputs(tipo_comando):
+    # Limpa os inputs anteriores
+    for widget in input_frame.winfo_children():
+        widget.grid_forget()
 
-def handle_command(command):
-    """
-    Função intermediária que recebe o comando do botão, coleta os inputs do usuário e executa a função.
-    """
-    host = entry_host.get()
-    username = entry_username.get()
-    password = entry_password.get()
-    serial = entry_serial.get() or None
-    placa = entry_placa.get() or None
-    pon = entry_pon.get() or None
-    alias = entry_alias.get() or None
-    flow = entry_flow.get() or None
+    if tipo_comando == "unc":
+        placa_label.grid(row=0, column=0, sticky="e")
+        placa_combobox.grid(row=0, column=1)
 
-    # Chama a função executar_parks com os parâmetros coletados
+    elif tipo_comando == "mostrar_ids":
+        placa_label.grid(row=0, column=0, sticky="e")
+        placa_combobox.grid(row=0, column=1)
+        pon_label.grid(row=1, column=0, sticky="e")
+        pon_combobox.grid(row=1, column=1)
+
+    elif tipo_comando == "configurar_onu":
+        placa_label.grid(row=0, column=0, sticky="e")
+        placa_combobox.grid(row=0, column=1)
+        pon_label.grid(row=1, column=0, sticky="e")
+        pon_combobox.grid(row=1, column=1)
+        pppoe_label.grid(row=2, column=0, sticky="e")
+        pppoe_entry.grid(row=2, column=1)
+        vlan_label.grid(row=3, column=0, sticky="e")
+        vlan_entry.grid(row=3, column=1)
+        serial_label.grid(row=4, column=0, sticky="e")
+        serial_entry.grid(row=4, column=1)
+        id_label.grid(row=5, column=0, sticky="e")
+        id_combobox.grid(row=5, column=1)
+
+# Função para executar o comando com os dados fornecidos
+def executar_comando(tipo_comando):
+    host = host_entry.get()
+    serial = serial_entry.get()
+    placa = placa_combobox.get()
+    pon = pon_combobox.get()
+    pppoe = pppoe_entry.get()
+    id_val = id_combobox.get()
+    vlan = vlan_entry.get()
+
+    if not host or not tipo_comando:
+        messagebox.showerror("Erro", "Por favor, preencha todos os campos obrigatórios.")
+        return
+
     try:
-        result = executar_parks(host, username, password, command, serial, placa, pon, alias, flow)
-        output_text.insert(tk.END, f"Comando: {command}\n")
-        output_text.insert(tk.END, f"Resultado: {result}\n\n")
+        resultado = executar_zte(host, tipo_comando, serial, placa, pon, pppoe, id_val, vlan)
+        resultado_text.delete(1.0, tk.END)  # Limpa a área de texto
+        resultado_text.insert(tk.END, f"Comando executado: {resultado['comando']}\n")
+        resultado_text.insert(tk.END, f"Resultado: {resultado['output']}\n")
     except Exception as e:
-        output_text.insert(tk.END, f"Erro ao executar o comando '{command}': {str(e)}\n\n")
+        messagebox.showerror("Erro", f"Ocorreu um erro ao executar o comando: {e}")
 
-# Configuração da janela principal
+# Interface Gráfica
 root = tk.Tk()
-root.title("Comandos Parks com Tkinter")
-root.geometry("800x600")
+root.title("Interface Telnet ZTE")
 
-# Frame principal para organização
-main_frame = tk.Frame(root)
-main_frame.pack(fill="both", expand=True)
+# Host
+tk.Label(root, text="Host:").grid(row=0, column=0, sticky="e", padx=10, pady=5)
+host_entry = tk.Entry(root, width=30)
+host_entry.grid(row=0, column=1, padx=10, pady=5)
 
-# Frame esquerdo para inputs e botões
-frame_left = tk.Frame(main_frame, width=200)
-frame_left.pack(side="left", fill="y", padx=10, pady=10)
+# Tipo de Comando
+tk.Label(root, text="Tipo de Comando:").grid(row=1, column=0, sticky="e", padx=10, pady=5)
+tipo_comando_var = ttk.Combobox(root, values=list(comandos.keys()), state="readonly", width=27)
+tipo_comando_var.grid(row=1, column=1, padx=10, pady=5)
 
-# Campos de entrada para parâmetros
-tk.Label(frame_left, text="Host:").pack(anchor="w")
-entry_host = tk.Entry(frame_left, width=25)
-entry_host.pack(anchor="w")
+# Frame para inputs específicos do comando
+input_frame = tk.Frame(root)
+input_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
 
-tk.Label(frame_left, text="Username:").pack(anchor="w")
-entry_username = tk.Entry(frame_left, width=25)
-entry_username.pack(anchor="w")
+# Labels e inputs dos parâmetros
+placa_label = tk.Label(input_frame, text="Placa:")
+placa_combobox = ttk.Combobox(input_frame, values=["1", "2", "3"], state="readonly")
+pon_label = tk.Label(input_frame, text="PON:")
+pon_combobox = ttk.Combobox(input_frame, values=["1", "2", "3"], state="readonly")
+pppoe_label = tk.Label(input_frame, text="PPPoE:")
+pppoe_entry = tk.Entry(input_frame)
+serial_label = tk.Label(input_frame, text="Serial:")
+serial_entry = tk.Entry(input_frame)
+id_label = tk.Label(input_frame, text="ID:")
+id_combobox = ttk.Combobox(input_frame, values=["1", "2", "3"], state="readonly")
+vlan_label = tk.Label(input_frame, text="VLAN:")
+vlan_entry = tk.Entry(input_frame)
 
-tk.Label(frame_left, text="Password:").pack(anchor="w")
-entry_password = tk.Entry(frame_left, width=25, show="*")
-entry_password.pack(anchor="w")
+# Botões de comando
+def criar_botoes_comando():
+    comandos_list = list(comandos.keys())
+    for idx, comando in enumerate(comandos_list):
+        button = tk.Button(root, text=comando, command=lambda c=comando: configurar_inputs(c))
+        button.grid(row=3 + idx, column=0, columnspan=2, pady=5, padx=10, sticky="ew")
 
-tk.Label(frame_left, text="Serial:").pack(anchor="w")
-entry_serial = tk.Entry(frame_left, width=25)
-entry_serial.pack(anchor="w")
+criar_botoes_comando()
 
-tk.Label(frame_left, text="Placa:").pack(anchor="w")
-entry_placa = tk.Entry(frame_left, width=25)
-entry_placa.pack(anchor="w")
+# Botão de execução
+executar_button = tk.Button(root, text="Executar Comando", command=lambda: executar_comando(tipo_comando_var.get()))
+executar_button.grid(row=4 + len(comandos), column=0, columnspan=2, pady=10)
 
-tk.Label(frame_left, text="PON:").pack(anchor="w")
-entry_pon = tk.Entry(frame_left, width=25)
-entry_pon.pack(anchor="w")
+# Área de texto para mostrar o resultado
+resultado_text = tk.Text(root, width=60, height=15)
+resultado_text.grid(row=5 + len(comandos), column=0, columnspan=2, padx=10, pady=5)
 
-tk.Label(frame_left, text="Alias:").pack(anchor="w")
-entry_alias = tk.Entry(frame_left, width=25)
-entry_alias.pack(anchor="w")
-
-tk.Label(frame_left, text="Flow:").pack(anchor="w")
-entry_flow = tk.Entry(frame_left, width=25)
-entry_flow.pack(anchor="w")
-
-# Botões para cada comando
-def create_command_buttons():
-    tk.Label(frame_left, text="Comandos:", font=("Arial", 12, "bold")).pack(anchor="w", pady=5)
-    for command, command_string in comandos.items():
-        button = tk.Button(frame_left, text=command.capitalize(), command=lambda c=command_string: handle_command(c), width=20)
-        button.pack(anchor="w", pady=2)
-
-create_command_buttons()
-
-# Frame direito para exibir saída
-frame_right = tk.Frame(main_frame, bg="white")
-frame_right.pack(side="right", fill="both", expand=True, padx=10, pady=10)
-
-output_text = tk.Text(frame_right, wrap="word", bg="white", fg="black", font=("Arial", 10))
-output_text.pack(side="left", fill="both", expand=True)
-
-scrollbar = tk.Scrollbar(frame_right, command=output_text.yview)
-scrollbar.pack(side="right", fill="y")
-output_text.config(yscrollcommand=scrollbar.set)
-
-# Loop principal da interface gráfica
 root.mainloop()

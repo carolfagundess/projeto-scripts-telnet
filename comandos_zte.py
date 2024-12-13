@@ -37,8 +37,16 @@ def comando_localizaronu(serial, placa=None, pon=None, pppoe=None, id=None, vlan
     return f"show gpon onu by sn {serial}"
 
 
+def comando_removeronu(placa, pon, id):
+    return f"""
+configure terminal
+interface gpon-olt_1/{placa}/{pon}
+no onu {id}
+"""
+
+
 # Script provisionamento
-def comando_configurar_pppoe(placa,pon, id, serial, pppoe, vlan):
+def comando_configurar_pppoe(placa, pon, id, serial, pppoe, vlan):
     return f"""
 configure terminal
 interface gpon-olt_1/{placa}/{pon}
@@ -70,4 +78,5 @@ comandos = {
     "quedas_onu": comando_mostrarquedas,
     "sinal_onu": comando_mostrarsinal,
     "configurar_onu": comando_configurar_pppoe,
+    "remover_onu": comando_removeronu,
 }

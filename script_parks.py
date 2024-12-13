@@ -1,8 +1,17 @@
 import telnetlib
 from comandos_parks import comandos  # Importa o dicionário de comandos
 
+
 def executar_parks(
-    host, username, password, tipo_comando, serial=None, placa=None, pon=None, alias=None, flow=None
+    host,
+    username,
+    password,
+    tipo_comando,
+    serial=None,
+    placa=None,
+    pon=None,
+    alias=None,
+    flow=None,
 ):
     # Configurações do servidor Telnet
     PORT = 23  # Porta padrão do Telnet
@@ -59,4 +68,4 @@ def executar_parks(
 
 # Em teste
 # Provisionar (serial, placa e pon, alias, flow)
-#executar_parks()
+# executar_parks()
